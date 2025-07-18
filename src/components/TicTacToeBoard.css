@@ -1,0 +1,215 @@
+.board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+  background: linear-gradient(145deg, #2c3e50, #34495e);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 
+    20px 20px 40px rgba(0, 0, 0, 0.3),
+    -20px -20px 40px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(145deg, #3498db, #2980b9);
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    8px 8px 16px rgba(0, 0, 0, 0.2),
+    -8px -8px 16px rgba(255, 255, 255, 0.1);
+}
+
+.cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.cell:hover::before {
+  left: 100%;
+}
+
+.cell:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 
+    12px 20px 25px rgba(0, 0, 0, 0.3),
+    -12px -12px 25px rgba(255, 255, 255, 0.15);
+  background: linear-gradient(145deg, #5dade2, #3498db);
+}
+
+.cell:active {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    6px 10px 15px rgba(0, 0, 0, 0.2),
+    -6px -6px 15px rgba(255, 255, 255, 0.1);
+}
+
+.cell.filled {
+  background: linear-gradient(145deg, #e74c3c, #c0392b);
+  cursor: not-allowed;
+}
+
+.cell.filled.x {
+  background: linear-gradient(145deg, #e74c3c, #c0392b);
+}
+
+.cell.filled.o {
+  background: linear-gradient(145deg, #f39c12, #e67e22);
+}
+
+.cell.winning {
+  background: linear-gradient(145deg, #27ae60, #2ecc71) !important;
+  animation: winningPulse 1s infinite alternate;
+  box-shadow: 
+    0 0 30px rgba(46, 204, 113, 0.6),
+    8px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.symbol {
+  display: block;
+  animation: symbolAppear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.symbol.x {
+  color: #fff;
+  font-family: 'Arial Black', sans-serif;
+}
+
+.symbol.o {
+  color: #fff;
+  font-family: 'Arial Black', sans-serif;
+}
+
+.cell:disabled {
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.game-result {
+  text-align: center;
+  margin-top: 2rem;
+  animation: resultAppear 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.game-result h2 {
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, #f39c12, #e67e22);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-result h2.winner {
+  background: linear-gradient(145deg, #27ae60, #2ecc71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-result h2.draw {
+  background: linear-gradient(145deg, #95a5a6, #7f8c8d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes symbolAppear {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes winningPulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes resultAppear {
+  0% {
+    transform: translateY(50px) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cell {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+  
+  .board {
+    padding: 15px;
+    gap: 6px;
+  }
+  
+  .game-result h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cell {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+  }
+  
+  .board {
+    padding: 12px;
+    gap: 4px;
+  }
+  
+  .game-result h2 {
+    font-size: 1.8rem;
+  }
+}
