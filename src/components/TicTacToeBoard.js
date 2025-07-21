@@ -6,21 +6,27 @@ const TicTacToeBoard = ({ board, onCellClick, winner, disabled }) => {
     const value = board[index];
     const isWinningCell = winner && winner.winningCells && winner.winningCells.includes(index);
     
+    // Safety check: ensure value is a string or null
+    const cellValue = (value && typeof value === 'string') ? value : null;
+    
     return (
       <button
         key={index}
-        className={`cell ${value ? 'filled' : ''} ${isWinningCell ? 'winning' : ''}`}
+        className={`cell ${cellValue ? 'filled' : ''} ${isWinningCell ? 'winning' : ''}`}
         onClick={() => onCellClick(index)}
-        disabled={disabled || value}
+        disabled={disabled || cellValue}
       >
-        {value && (
-          <span className={`symbol ${value.toLowerCase()}`}>
-            {value}
+        {cellValue && (
+          <span className={`symbol ${cellValue.toLowerCase()}`}>
+            {cellValue}
           </span>
         )}
       </button>
     );
   };
+
+  // Safety check: ensure board is an array with 9 elements
+  const safeBoard = Array.isArray(board) && board.length === 9 ? board : Array(9).fill(null);
 
   return (
     <div className="board-container">
