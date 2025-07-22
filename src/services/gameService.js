@@ -152,7 +152,7 @@ class GameService {
       
       const apiMoveData = {
         row: coordinates.row,
-        col: coordinates.col,
+        column: coordinates.col,
         player: moveData.player
       };
 
