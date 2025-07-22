@@ -2,23 +2,18 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 class GameService {
   // Helper function to convert 2D board (3x3) to 1D board (9 elements)
-  convertBoardTo1D(board2D) {
-    console.log('convertBoardTo1D input:', board2D, 'Type:', typeof board2D, 'IsArray:', Array.isArray(board2D));
-    
+  convertBoardTo1D(board2D) {    
     if (!board2D || !Array.isArray(board2D)) {
-      console.log('Board is null or not an array, returning empty 1D board');
       return Array(9).fill(null);
     }
     
     // If it's already a 1D array, return as is
     if (board2D.length === 9 && !Array.isArray(board2D[0])) {
-      console.log('Board is already 1D array');
       return board2D;
     }
     
     // Check if it's a 2D array (string[][])
     if (board2D.length === 3 && Array.isArray(board2D[0])) {
-      console.log('Converting 2D board to 1D');
       const board1D = [];
       for (let row = 0; row < 3; row++) {
         for (let col = 0; col < 3; col++) {
@@ -28,11 +23,9 @@ class GameService {
           board1D.push(normalizedValue);
         }
       }
-      console.log('Converted 1D board:', board1D);
       return board1D;
     }
     
-    console.log('Unexpected board format, returning empty 1D board');
     return Array(9).fill(null);
   }
 
@@ -62,8 +55,7 @@ class GameService {
 
   // Helper function to normalize game response
   normalizeGameResponse(gameData) {
-    console.log('Raw API Response:', gameData);
-    
+
     // Handle nested game structure (when API returns { game: {...} })
     const game = gameData.game || gameData;
     
@@ -79,7 +71,6 @@ class GameService {
       lastMoveAt: game.lastMoveAt || gameData.lastMoveAt
     };
     
-    console.log('Normalized Game Data:', normalized);
     return normalized;
   }
 
@@ -97,7 +88,6 @@ class GameService {
       }
       
       const gameData = await response.json();
-      console.log('Game created successfully:', gameData);
 
       return this.normalizeGameResponse(gameData);
     } catch (error) {
