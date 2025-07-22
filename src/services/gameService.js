@@ -3,23 +3,37 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 class GameService {
   // Helper function to convert 2D board (3x3) to 1D board (9 elements)
   convertBoardTo1D(board2D) {
+    console.log('convertBoardTo1D input:', board2D, 'Type:', typeof board2D, 'IsArray:', Array.isArray(board2D));
+    
     if (!board2D || !Array.isArray(board2D)) {
+      console.log('Board is null or not an array, returning empty 1D board');
       return Array(9).fill(null);
     }
     
     // If it's already a 1D array, return as is
     if (board2D.length === 9 && !Array.isArray(board2D[0])) {
+      console.log('Board is already 1D array');
       return board2D;
     }
     
-    // Convert 2D to 1D
-    const board1D = [];
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 3; col++) {
-        board1D.push(board2D[row] ? board2D[row][col] : null);
+    // Check if it's a 2D array (string[][])
+    if (board2D.length === 3 && Array.isArray(board2D[0])) {
+      console.log('Converting 2D board to 1D');
+      const board1D = [];
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+          const cellValue = board2D[row] && board2D[row][col] !== undefined ? board2D[row][col] : null;
+          // Convert empty strings to null
+          const normalizedValue = cellValue === "" || cellValue === null || cellValue === undefined ? null : cellValue;
+          board1D.push(normalizedValue);
+        }
       }
+      console.log('Converted 1D board:', board1D);
+      return board1D;
     }
-    return board1D;
+    
+    console.log('Unexpected board format, returning empty 1D board');
+    return Array(9).fill(null);
   }
 
   // Helper function to convert 1D board (9 elements) to 2D board (3x3)
@@ -48,17 +62,25 @@ class GameService {
 
   // Helper function to normalize game response
   normalizeGameResponse(gameData) {
-    return {
-      id: gameData.gameId || gameData.id,
-      board: this.convertBoardTo1D(gameData.board),
-      currentPlayer: gameData.currentPlayer || 'X',
-      isGameOver: gameData.isGameOver || false,
-      winner: gameData.winner || null,
-      isDraw: gameData.isDraw || false,
-      winningCells: gameData.winningCells || [],
-      createdAt: gameData.createdAt,
-      lastMoveAt: gameData.lastMoveAt
+    console.log('Raw API Response:', gameData);
+    
+    // Handle nested game structure (when API returns { game: {...} })
+    const game = gameData.game || gameData;
+    
+    const normalized = {
+      id: game.gameId || game.id || gameData.gameId || gameData.id,
+      board: this.convertBoardTo1D(game.board),
+      currentPlayer: game.currentPlayer || 'X',
+      isGameOver: game.isGameOver || false,
+      winner: game.winner || null,
+      isDraw: game.isDraw || false,
+      winningCells: game.winningCells || [],
+      createdAt: game.createdAt || gameData.createdAt,
+      lastMoveAt: game.lastMoveAt || gameData.lastMoveAt
     };
+    
+    console.log('Normalized Game Data:', normalized);
+    return normalized;
   }
 
   async createGame() {
@@ -157,6 +179,10 @@ class GameService {
       }
       
       const gameData = await response.json();
+
+      console.log('Move made successfully:', gameData);
+      console.log('Board after making the move : ', gameData.game.board);
+
       return this.normalizeGameResponse(gameData);
     } catch (error) {
       console.error('Error making move:', error);
