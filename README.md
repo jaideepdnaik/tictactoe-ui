@@ -1,16 +1,19 @@
 # 🎮 Tic Tac Toe Deluxe - React Frontend
 
-A beautiful and modern Tic Tac Toe game built with React that connects to a backend API for persistent game storage and multiplayer functionality.
+A beautiful and modern Tic Tac Toe game built with React that connects to a backend API for persistent game storage and real-time multiplayer functionality using SignalR.
 
 ## ✨ Features
 
 - **🎨 Modern UI/UX**: Beautiful gradient backgrounds, smooth animations, and responsive design
-- **🔄 Persistent Games**: Save and load games using backend API integration
+- **� Real-time Multiplayer**: Play with friends using SignalR for instant updates
+- **�🔄 Persistent Games**: Save and load games using backend API integration
 - **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
 - **🎯 Game Management**: Create, load, and delete games with ease
 - **🏆 Win Detection**: Automatic win detection with winning cell highlighting
 - **⚡ Real-time Updates**: Smooth animations and immediate feedback
-- **🌙 Dark Mode Ready**: Supports system dark mode preferences
+- **� Connection Status**: Live connection monitoring with reconnection support
+- **💬 Game Messages**: Real-time game events and notifications
+- **�🌙 Dark Mode Ready**: Supports system dark mode preferences
 
 ## 🚀 Getting Started
 
@@ -18,7 +21,7 @@ A beautiful and modern Tic Tac Toe game built with React that connects to a back
 
 - Node.js (v16 or higher)
 - npm or yarn
-- Backend API server running (see API Configuration below)
+- Backend API server with SignalR hub running (see API Configuration below)
 
 ### Installation
 
@@ -32,8 +35,13 @@ A beautiful and modern Tic Tac Toe game built with React that connects to a back
    npm install
    ```
 
-3. **Configure API endpoint** (optional):
-   Update the `.env` file to point to your backend API:
+3. **Configure API endpoint**:
+   Copy the example environment file and update it:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Update `.env.local` to point to your backend API:
    ```env
    REACT_APP_API_URL=http://localhost:5000
    ```
@@ -47,6 +55,7 @@ A beautiful and modern Tic Tac Toe game built with React that connects to a back
 
 ## 🎯 How to Play
 
+### Single Player Mode
 1. **Start a New Game**: Click the "🎮 New Game" button to create a fresh game
 2. **Make Moves**: Click on any empty cell to make your move
 3. **Switch Players**: The game automatically alternates between X and O players
@@ -54,15 +63,50 @@ A beautiful and modern Tic Tac Toe game built with React that connects to a back
 5. **Load Previous Games**: Click "📁 Load Game" to see and resume saved games
 6. **Delete Games**: Remove unwanted games using the delete button
 
-## 🔧 API Integration
+### Multiplayer Mode
+1. **Enter Your Name**: Type your name in the player name field
+2. **Create or Join**: 
+   - Click "🆕 Create Game" to start a new multiplayer game
+   - Click "� Join Game" to see available games and join one
+3. **Wait for Opponent**: Once in a game, wait for another player to join
+4. **Play Together**: Take turns making moves in real-time
+5. **Real-time Updates**: See opponent moves instantly via SignalR connection
+
+## �🔧 API Integration
 
 The frontend integrates with the following backend endpoints:
 
-- **POST** `/api/Games` - Create a new game
+### REST API Endpoints
+- **POST** `/api/Games` - Create a new single-player game
 - **GET** `/api/Games` - Get all games
 - **GET** `/api/Games/{gameId}` - Get a specific game
 - **DELETE** `/api/Games/{gameId}` - Delete a game
-- **POST** `/api/Games/{gameId}/moves` - Make a move in a game
+- **POST** `/api/Games/{gameId}/moves` - Make a move in a single-player game
+
+### Multiplayer API Endpoints
+- **GET** `/api/games/multiplayer/available` - Get available multiplayer games
+- **POST** `/api/games/multiplayer` - Create multiplayer game via REST
+- **POST** `/api/games/{gameId}/join` - Join game via REST
+
+### SignalR Hub (`/gameHub`)
+The application uses SignalR for real-time multiplayer communication:
+
+#### Client to Server Methods:
+- `JoinGame(gameId, playerName)` - Join an existing game
+- `CreateGame(playerName)` - Create a new multiplayer game
+- `MakeMove(gameId, move)` - Make a move in real-time
+- `LeaveGame(gameId)` - Leave a multiplayer game
+
+#### Server to Client Events:
+- `PlayerJoined` - Another player joined the game
+- `GameJoined` - Successfully joined a game
+- `GameCreated` - Game created successfully
+- `MoveMade` - A move was made by any player
+- `GameEnded` - Game finished (win/draw)
+- `MoveRejected` - Move was invalid
+- `PlayerLeft` - Player left the game
+- `PlayerDisconnected` - Player disconnected
+- `Error` - General error message
 
 ### Expected API Response Format
 
@@ -76,12 +120,24 @@ The frontend integrates with the following backend endpoints:
   winner: "X" | "O" | null,
   isDraw: boolean,
   winningCells: [0, 4, 8], // array of winning cell indices
-  createdAt: "2023-12-18T10:30:00Z"
+  players: [
+    { name: "Player1", symbol: "X" },
+    { name: "Player2", symbol: "O" }
+  ],
+  createdAt: "2023-12-18T10:30:00Z",
+  lastMoveAt: "2023-12-18T10:35:00Z"
 }
 
-// Move Request
+// Move Request (Single Player)
 {
   position: 0-8, // cell index
+  player: "X" | "O"
+}
+
+// Move Request (Multiplayer via SignalR)
+{
+  row: 0-2,
+  column: 0-2,
   player: "X" | "O"
 }
 ```

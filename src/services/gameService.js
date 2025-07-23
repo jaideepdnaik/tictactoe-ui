@@ -179,6 +179,68 @@ class GameService {
       throw error;
     }
   }
+
+  // Multiplayer game methods via REST API
+  
+  async getAvailableMultiplayerGames() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/games/multiplayer/available`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch available multiplayer games');
+      }
+      
+      const gamesData = await response.json();
+      return gamesData.map(game => this.normalizeGameResponse(game));
+    } catch (error) {
+      console.error('Error fetching available multiplayer games:', error);
+      throw error;
+    }
+  }
+
+  async createMultiplayerGame(playerName) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/games/multiplayer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ playerName }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create multiplayer game');
+      }
+      
+      const gameData = await response.json();
+      return this.normalizeGameResponse(gameData);
+    } catch (error) {
+      console.error('Error creating multiplayer game:', error);
+      throw error;
+    }
+  }
+
+  async joinMultiplayerGame(gameId, playerName) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/games/${gameId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ playerName }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to join multiplayer game');
+      }
+      
+      const gameData = await response.json();
+      return this.normalizeGameResponse(gameData);
+    } catch (error) {
+      console.error('Error joining multiplayer game:', error);
+      throw error;
+    }
+  }
 }
 
 const gameService = new GameService();

@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import TicTacToe from './TicTacToe';
+import MultiplayerGame from './components/MultiplayerGame';
 import UseStateExamples from './examples/UseStateExamples';
 import './App.css';
 
 function App() {
-  const [showExamples, setShowExamples] = useState(false);
+  const [currentView, setCurrentView] = useState('singleplayer');
+
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'singleplayer':
+        return <TicTacToe />;
+      case 'multiplayer':
+        return <MultiplayerGame />;
+      case 'examples':
+        return <UseStateExamples />;
+      default:
+        return <TicTacToe />;
+    }
+  };
 
   return (
     <div className="App">
@@ -14,37 +28,54 @@ function App() {
         right: '10px', 
         zIndex: 1000,
         display: 'flex',
-        gap: '10px'
+        gap: '10px',
+        flexWrap: 'wrap'
       }}>
         <button 
-          onClick={() => setShowExamples(false)}
+          onClick={() => setCurrentView('singleplayer')}
           style={{
             padding: '10px 15px',
-            background: showExamples ? '#95a5a6' : '#3498db',
+            background: currentView === 'singleplayer' ? '#3498db' : '#95a5a6',
             color: 'white',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontSize: '14px'
           }}
         >
-          🎮 Tic Tac Toe
+          🎮 Single Player
         </button>
         <button 
-          onClick={() => setShowExamples(true)}
+          onClick={() => setCurrentView('multiplayer')}
           style={{
             padding: '10px 15px',
-            background: showExamples ? '#3498db' : '#95a5a6',
+            background: currentView === 'multiplayer' ? '#3498db' : '#95a5a6',
             color: 'white',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontSize: '14px'
           }}
         >
-          📚 useState Examples
+          � Multiplayer
+        </button>
+        <button 
+          onClick={() => setCurrentView('examples')}
+          style={{
+            padding: '10px 15px',
+            background: currentView === 'examples' ? '#3498db' : '#95a5a6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+        >
+          📚 Examples
         </button>
       </div>
       
-      {showExamples ? <UseStateExamples /> : <TicTacToe />}
+      {renderCurrentView()}
     </div>
   );
 }
